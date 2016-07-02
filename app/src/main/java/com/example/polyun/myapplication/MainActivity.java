@@ -35,14 +35,14 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
     public void show_indoors() {
 
-        ActivityCompat.requestPermissions(this,
+        /*ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
 
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
 
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);*/
 
         IndoorsFactory.Builder indoorsBuilder = new IndoorsFactory.Builder();
         IndoorsSurfaceFactory.Builder surfaceBuilder = new IndoorsSurfaceFactory.Builder();
