@@ -36,6 +36,9 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
     public void show_indoors() {
 
         /*ActivityCompat.requestPermissions(this,
+
+
+        ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
 
         ActivityCompat.requestPermissions(this,
