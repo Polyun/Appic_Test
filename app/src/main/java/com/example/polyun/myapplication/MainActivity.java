@@ -33,9 +33,10 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
     private Indoors indoors;
     private IndoorsSurfaceFragment IndoorsSurfaceFragment;
-    private SurfaceState custom_Surface_State = new SurfaceState();
-    IndoorsFactory.Builder indoorsBuilder = new IndoorsFactory.Builder();
-    IndoorsSurfaceFactory.Builder surfaceBuilder = new IndoorsSurfaceFactory.Builder();
+    private SurfaceState custom_Surface_State       = new SurfaceState();
+    IndoorsFactory.Builder indoorsBuilder           = new IndoorsFactory.Builder();
+    IndoorsSurfaceFactory.Builder surfaceBuilder    = new IndoorsSurfaceFactory.Builder();
+    Toast currentToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,25 +44,12 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
 
         setContentView(R.layout.activity_main);
-        Toast.makeText(getApplicationContext(), "Start indoors", Toast.LENGTH_SHORT).show();
+        showToast("Start indoors");
+        //Toast.makeText(getApplicationContext(), "Start indoors", Toast.LENGTH_SHORT).show();
         show_indoors();
     }
 
     public void show_indoors() {
-
-        /*
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);*/
-
-
-
-
 
         indoorsBuilder.setUserInteractionListener(this);
 
@@ -79,9 +67,10 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
         // TODO: replace 12345 with the id of the building you uploaded to
         // our cloud using the MMT
         indoorsBuilder.setBuildingId((long) 783306659);
-        Toast.makeText(getApplicationContext(), "BuildingID loaded", Toast.LENGTH_SHORT).show();
+        showToast("BuildingID loaded and Interaction Listener loaded");
+        //Toast.makeText(getApplicationContext(), "BuildingID loaded", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(getApplicationContext(), "Interaction Listener loaded", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Interaction Listener loaded", Toast.LENGTH_SHORT).show();
         surfaceBuilder.setIndoorsBuilder(indoorsBuilder);
 
         custom_Surface_State.autoSelect = false;
@@ -91,7 +80,8 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
         IndoorsSurfaceFragment = surfaceBuilder.build();
         IndoorsSurfaceFragment.setViewMode(ViewMode.LOCK_ON_ME);
 
-        Toast.makeText(getApplicationContext(), "IndoorsSurfaceFragment loaded", Toast.LENGTH_SHORT).show();
+        showToast("IndoorsSurfaceFragment loaded");
+        //Toast.makeText(getApplicationContext(), "IndoorsSurfaceFragment loaded", Toast.LENGTH_SHORT).show();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(android.R.id.content, IndoorsSurfaceFragment, "indoors");
@@ -102,13 +92,15 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
     @Override
     public void loadingBuilding(LoadingBuildingStatus loadingBuildingStatus) {
         int progress = loadingBuildingStatus.getProgress();
-        Toast toast = Toast.makeText(getApplicationContext(), "Building Loading progress " + progress, Toast.LENGTH_SHORT);
-        toast.show();
+        showToast("Building Loading progress " + progress);
+        //Toast toast = Toast.makeText(getApplicationContext(), "Building Loading progress " + progress, Toast.LENGTH_SHORT);
+        //toast.show();
     }
 
     @Override
     public void buildingLoaded(Building building) {
-        Toast.makeText(getApplicationContext(), "Building loaded", Toast.LENGTH_SHORT).show();
+        showToast("Building loaded");
+        //Toast.makeText(getApplicationContext(), "Building loaded", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -127,8 +119,9 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
         //surface_State.selectFittingBackground();
         //surface_State.adjustMapPosition(x,y);
         //IndoorsSurfaceFragment.centerUserPosition();
-        Toast toast = Toast.makeText(getApplicationContext(), "Position Update x:"+x+" y:"+y+" z:"+z, Toast.LENGTH_SHORT);
-        toast.show();
+        //Toast toast = Toast.makeText(getApplicationContext(), "Position Update x:"+x+" y:"+y+" z:"+z, Toast.LENGTH_SHORT);
+        //toast.show();
+        showToast("Position Update x:"+x+" y:"+y+" z:"+z);
     }
 
     @Override
@@ -148,12 +141,25 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
     @Override
     public void buildingLoadingCanceled() {
-        Toast.makeText(getApplicationContext(), "Canceled Building Loading", Toast.LENGTH_SHORT).show();
+        showToast("Canceled Buliding Loading");
+        //Toast.makeText(getApplicationContext(), "Canceled Building Loading", Toast.LENGTH_SHORT).show();
     }
 
 
     @Override
     public void onError(IndoorsException e) {
 
+    }
+
+    void showToast(String text)
+    {
+        if(currentToast == null)
+        {
+            currentToast = Toast.makeText(this, text, Toast.LENGTH_LONG);
+        }
+
+        currentToast.setText(text);
+        currentToast.setDuration(Toast.LENGTH_LONG);
+        currentToast.show();
     }
 }
