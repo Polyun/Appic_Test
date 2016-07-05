@@ -1,31 +1,24 @@
 package com.example.polyun.myapplication;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.customlbs.library.Indoors;
 import com.customlbs.library.IndoorsException;
 import com.customlbs.library.IndoorsFactory;
 import com.customlbs.library.IndoorsLocationListener;
-import com.customlbs.library.LocalizationParameters;
-import com.customlbs.library.callbacks.IndoorsServiceCallback;
 import com.customlbs.library.callbacks.LoadingBuildingStatus;
 import com.customlbs.library.model.Building;
 import com.customlbs.library.model.Zone;
-import com.customlbs.library.util.IndoorsCoordinateUtil;
 import com.customlbs.shared.Coordinate;
 import com.customlbs.surface.library.IndoorsSurfaceFactory;
 import com.customlbs.surface.library.IndoorsSurfaceFragment;
 import com.customlbs.surface.library.SurfaceState;
 import com.customlbs.surface.library.ViewMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,6 +30,7 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
     IndoorsFactory.Builder indoorsBuilder           = new IndoorsFactory.Builder();
     IndoorsSurfaceFactory.Builder surfaceBuilder    = new IndoorsSurfaceFactory.Builder();
     Toast currentToast;
+    List<Long> lastZoneIDList                       = new ArrayList<Long>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +39,6 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
         setContentView(R.layout.activity_main);
         showToast("Start indoors");
-        //Toast.makeText(getApplicationContext(), "Start indoors", Toast.LENGTH_SHORT).show();
         show_indoors();
     }
 
@@ -68,9 +61,7 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
         // our cloud using the MMT
         indoorsBuilder.setBuildingId((long) 783306659);
         showToast("BuildingID loaded and Interaction Listener loaded");
-        //Toast.makeText(getApplicationContext(), "BuildingID loaded", Toast.LENGTH_SHORT).show();
 
-        //Toast.makeText(getApplicationContext(), "Interaction Listener loaded", Toast.LENGTH_SHORT).show();
         surfaceBuilder.setIndoorsBuilder(indoorsBuilder);
 
         custom_Surface_State.autoSelect = false;
@@ -79,9 +70,9 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
         IndoorsSurfaceFragment = surfaceBuilder.build();
         IndoorsSurfaceFragment.setViewMode(ViewMode.LOCK_ON_ME);
+        //IndoorsSurfaceFragment.setViewMode(ViewMode.HIGHLIGHT_ALL_ZONES);
 
         showToast("IndoorsSurfaceFragment loaded");
-        //Toast.makeText(getApplicationContext(), "IndoorsSurfaceFragment loaded", Toast.LENGTH_SHORT).show();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(android.R.id.content, IndoorsSurfaceFragment, "indoors");
@@ -93,19 +84,16 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
     public void loadingBuilding(LoadingBuildingStatus loadingBuildingStatus) {
         int progress = loadingBuildingStatus.getProgress();
         showToast("Building Loading progress " + progress);
-        //Toast toast = Toast.makeText(getApplicationContext(), "Building Loading progress " + progress, Toast.LENGTH_SHORT);
-        //toast.show();
     }
 
     @Override
     public void buildingLoaded(Building building) {
         showToast("Building loaded");
-        //Toast.makeText(getApplicationContext(), "Building loaded", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void leftBuilding(Building building) {
-
+        //Deprecated - do not use, says indoors-documentation
     }
 
     @Override
@@ -119,8 +107,6 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
         //surface_State.selectFittingBackground();
         //surface_State.adjustMapPosition(x,y);
         //IndoorsSurfaceFragment.centerUserPosition();
-        //Toast toast = Toast.makeText(getApplicationContext(), "Position Update x:"+x+" y:"+y+" z:"+z, Toast.LENGTH_SHORT);
-        //toast.show();
         showToast("Position Update x:"+x+" y:"+y+" z:"+z);
     }
 
@@ -136,13 +122,37 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
     @Override
     public void enteredZones(List<Zone> list) {
-        //Toast.makeText(getApplicationContext(), "Entered Zone", Toast.LENGTH_SHORT).show();
+        if (zoneListChanged(list)) {
+            for (Zone zone : list) {
+                showToast("Zone name: " + zone.getName() + "\nZone ID: " + zone.getId() +
+                        "\nZone description: " + zone.getDescription());
+            }
+        }
+    }
+
+    /**
+     * Check if given zone list is different from last one
+     * @param zoneListNew List of new zones to check for differences
+     * @return true: given zone list is different from previous one. Else false.
+     */
+    private boolean zoneListChanged(List<Zone> zoneListNew) {
+        List<Long> zoneIDListNew    = new ArrayList<Long>();
+        boolean isChanged           = false;
+        for (Zone zone: zoneListNew) {
+            zoneIDListNew.add(zone.getId());
+            if (!lastZoneIDList.contains(zone.getId())) {
+                isChanged           = true;
+            }
+        }
+        if (isChanged)
+            lastZoneIDList          = zoneIDListNew;
+
+        return isChanged;
     }
 
     @Override
     public void buildingLoadingCanceled() {
         showToast("Canceled Buliding Loading");
-        //Toast.makeText(getApplicationContext(), "Canceled Building Loading", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -151,6 +161,10 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
     }
 
+    /**
+     * Shows toast message with given text. Cancels prev toast messages.
+     * @param text message to show in toast.
+     */
     void showToast(String text)
     {
         if(currentToast == null)
