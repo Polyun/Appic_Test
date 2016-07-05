@@ -70,6 +70,7 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
 
         IndoorsSurfaceFragment = surfaceBuilder.build();
         IndoorsSurfaceFragment.setViewMode(ViewMode.LOCK_ON_ME);
+
         //IndoorsSurfaceFragment.setViewMode(ViewMode.HIGHLIGHT_ALL_ZONES);
 
         showToast("IndoorsSurfaceFragment loaded");
@@ -107,6 +108,10 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
         //surface_State.selectFittingBackground();
         //surface_State.adjustMapPosition(x,y);
         //IndoorsSurfaceFragment.centerUserPosition();
+
+        //Update old Zone-List cause there is no zone-left-event
+        zoneListChanged(IndoorsSurfaceFragment.getCurrentZones());
+
         showToast("Position Update x:"+x+" y:"+y+" z:"+z);
     }
 
@@ -144,16 +149,16 @@ public class MainActivity extends FragmentActivity implements IndoorsLocationLis
                 isChanged           = true;
             }
         }
-        if (isChanged)
-            lastZoneIDList          = zoneIDListNew;
+        lastZoneIDList              = zoneIDListNew;
 
         return isChanged;
     }
 
     @Override
     public void buildingLoadingCanceled() {
-        showToast("Canceled Buliding Loading");
+        showToast("Canceled Building Loading");
     }
+
 
 
     @Override
